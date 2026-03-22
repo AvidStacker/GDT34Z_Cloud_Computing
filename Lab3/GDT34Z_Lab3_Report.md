@@ -232,7 +232,7 @@ The script successfully identifies mismatches between file content and file exte
 
 ### a) Relevance
 
-The lab is highly relevant and reflects real-world scenarios in cybersecurity and system administration.
+The lab is relevant as it provides hands-on experience with analyzing file signatures and detecting file type mismatches. It specifically highlights how easily file extensions can be manipulated and why relying on file content is more reliable when identifying potentially malicious or disguised files.
 
 ### b) Suggested Improvements
 
