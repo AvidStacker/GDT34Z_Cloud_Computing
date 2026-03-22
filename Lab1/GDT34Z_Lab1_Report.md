@@ -1,5 +1,3 @@
-
-```
 # Lab 1 Report – Cloud Computing / Network Security / System Administration
 
 **Course:** Cloud Computing / Network Security / System Administration (GDT34Z)  
