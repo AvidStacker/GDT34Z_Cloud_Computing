@@ -1,5 +1,12 @@
 # Lab 2 – Oracle Cloud Infrastructure (OCI)
 
+Course: Cloud Computing / Network Security / System Administration (GDT34Z)
+Platform: Oracle Cloud Infrastructure (OCI)
+Operating System: Ubuntu Linux (ARM64)
+
+---
+
+# Introduction
 This lab demonstrates how to deploy and manage cloud infrastructure in Oracle Cloud Infrastructure (OCI).  
 The tasks include configuring OCI CLI, attaching block storage, deploying a web server, using object storage, retrieving secrets from OCI Vault, enabling flow logs, and configuring monitoring alarms.
 
