@@ -199,4 +199,3 @@ This lab demonstrated the deployment and management of cloud resources in Oracle
 Key components such as compute instances, block storage, object storage, vault secrets, logging, and monitoring alarms were successfully configured and tested.
 
 The lab highlights how OCI provides secure, scalable, and manageable infrastructure for cloud-based applications.
-```
