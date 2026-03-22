@@ -1,8 +1,8 @@
 # Lab 2 – Oracle Cloud Infrastructure (OCI)
 
-Course: Cloud Computing / Network Security / System Administration (GDT34Z)
-Platform: Oracle Cloud Infrastructure (OCI)
-Operating System: Ubuntu Linux (ARM64)
+**Course:** Cloud Computing / Network Security / System Administration (GDT34Z)  
+**Platform:** Oracle Cloud Infrastructure (OCI)  
+**Operating System:** Ubuntu Linux (ARM64)
 
 ---
 
