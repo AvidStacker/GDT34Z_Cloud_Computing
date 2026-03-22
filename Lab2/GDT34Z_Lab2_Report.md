@@ -1,17 +1,3 @@
-Sure. Below is a **clean lab report template in Markdown** that matches what your screenshots show.
-You can paste this directly into **GitHub / Markdown / Word (via Markdown converter)**.
-
-Just make sure your screenshots are in a folder like:
-
-```
-Screenshots/
-```
-
-and named accordingly.
-
----
-
-```markdown
 # Lab 2 – Oracle Cloud Infrastructure (OCI)
 
 This lab demonstrates how to deploy and manage cloud infrastructure in Oracle Cloud Infrastructure (OCI).  
