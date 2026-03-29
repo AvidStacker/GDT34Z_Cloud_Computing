@@ -8,162 +8,131 @@
 
 # Introduction
 This lab demonstrates how to deploy and manage cloud infrastructure in Oracle Cloud Infrastructure (OCI).  
-The tasks include configuring OCI CLI, attaching block storage, deploying a web server, using object storage, retrieving secrets from OCI Vault, enabling flow logs, and configuring monitoring alarms.
+The tasks include Infrastructure as Code (Terraform), block storage configuration, object storage with IAM access, logging, and monitoring.
 
 ---
 
-# 0. Compute Instance
+# 2.2.1 Infrastructure as Code (Terraform)
 
-A compute instance was created using Terraform and is running in OCI.
+A compute instance was automatically provisioned using Terraform.  
+This fulfills the requirement of deploying infrastructure using Infrastructure as Code.
 
 ![Compute instance](Screenshots/oci_instance_overview.png)
 
----
-
-# 1. OCI CLI Configuration
-
-The OCI CLI was configured to allow interaction with OCI services from the command line.  
-An API key was generated and added to the OCI configuration.
-
-The namespace of the object storage service was retrieved using:
-
-```
-
-oci os ns get
-
-```
-
-This confirmed that the CLI authentication was working correctly.
-
-![OCI CLI configuration](Screenshots/oci_cli_namespace.png)
+The instance was successfully created and is running in OCI.  
+This demonstrates automated provisioning instead of manual configuration.
 
 ---
 
-# 2. Block Storage Volume Mounting
+# 2.3 Block Storage Configuration
 
-A block storage volume was attached to the compute instance.  
-The volume was mounted to `/mnt/block`.
+A block storage volume was attached to the compute instance and mounted to `/mnt/block`.
 
 Commands used:
-
-```
-
 sudo mkdir /mnt/block
 sudo mount /dev/sdb /mnt/block
 
-```
 
-Disk usage was verified using:
-
-```
-
+Disk usage verification:
 df -h
 
-```
 
 ![Block volume mounted](Screenshots/df_output.png)
 
-The block device layout was also verified.
-
-```
-
+Block device layout:
 lsblk
 
-```
 
 ![lsblk output](Screenshots/lsblk_output.png)
 
 ---
 
-# 3. Persistent Mount Configuration
+## Persistent Mount
 
-To ensure the block volume remains mounted after reboot, the `/etc/fstab` file was updated with the device UUID.
-
-Command used:
-
-```
+To ensure the volume persists after reboot, `/etc/fstab` was configured using UUID.
 
 cat /etc/fstab
 
-```
-
-The configuration shows the mounted block volume using its UUID.
 
 ![fstab configuration](Screenshots/fstab_configuration.png)
 
----
-
-# 4. Web Server Deployment
-
-A web server was installed and configured on the compute instance.  
-The server successfully served a webpage accessible through the instance public IP.
-
-The browser displays the web page confirming the web server is operational.
-
-![Web server running](Screenshots/web_server.png)
+This confirms correct persistent mounting.
 
 ---
 
-# 5. Object Storage Bucket
+# 2.4.1 Object Storage and Manual Access
 
-An Object Storage bucket named `lab2-bucket` was created.  
-Objects were uploaded to verify the functionality of the bucket.
+## Bucket Creation
+
+An Object Storage bucket named `lab2-bucket` was created.
 
 ![Object storage bucket](Screenshots/object_storage_bucket.png)
 
-This confirms that object storage is correctly configured and accessible.
+Objects were uploaded successfully.
 
 ![Object bucket reachability test](Screenshots/bucket_reachability_test.png)
 
 ---
 
-# 6. OCI Vault Secret Management
+## IAM User and Policy Configuration
 
-A secret was stored in OCI Vault and retrieved using a Python script that authenticates using instance principals.
+A new user with limited privileges was created for accessing object storage.
 
-The script used the OCI Python SDK to retrieve the secret.
+Steps performed:
 
-Command executed:
+- Created a new user in OCI
+- Generated **Customer Secret Keys**
+- Created a group and added the user
+- Created a policy:
 
-```
+Allow group <group-name> to manage all-resources in compartment <compartment-name>
 
-python3 oci_vault_test1.py
-
-```
-
-Output:
-
-```
-
-This is probably super secret!
-
-```
-
-![Vault secret retrieval](Screenshots/vault_secret_retrieval.png)
-
-This demonstrates secure secret retrieval without embedding credentials in the application.
 
 ---
 
-# 7. VCN Flow Logging
+## Public Bucket Access
 
-VCN Flow Logs were enabled to capture network traffic information within the Virtual Cloud Network.
+A public object was uploaded and accessed via a browser URL.
 
-The flow logs were stored in the OCI Logging service.
+![Public bucket access](Screenshots/public_bucket_access.png)
+
+This confirms that public access works.
+
+---
+
+## Private Bucket Access
+
+Access to a private bucket was tested using S3-compatible tools.
+
+![Private bucket access](Screenshots/private_bucket_access.png)
+
+This confirms secure access using credentials.
+
+---
+
+# 2.7.1 Cloud Logging (VCN Flow Logs)
+
+VCN Flow Logs were enabled to capture network traffic within the subnet.
 
 ![Flow log configuration](Screenshots/flow_logs_dashboard.png)
 
-This allows monitoring of network activity such as source and destination IP addresses and allowed traffic.
+Logs show network activity such as:
 
-![Flow log configuration](Screenshots/logs_event_chart.png)
+- Source IP  
+- Destination IP  
+- Allowed traffic  
+
+![Flow log events](Screenshots/logs_event_chart.png)
+
+This demonstrates successful logging of network traffic.
 
 ---
 
-# 8. Monitoring Alarm Configuration
+# 2.8.1 Monitoring, Alarms and Notifications
 
-An OCI Monitoring alarm was created to detect high CPU utilization on the compute instance.
+## Alarm Configuration
 
-Alarm configuration:
+An OCI Monitoring alarm was created with:
 
 - Metric: `CpuUtilization`
 - Threshold: `> 80%`
@@ -174,35 +143,42 @@ Alarm configuration:
 
 ---
 
-# 9. Alarm Trigger Test
+## Alarm Trigger Test
 
-To test the alarm, CPU load was generated using the following command:
-
-```
-
+CPU load was generated:
 stress --cpu 2 --timeout 300
 
-```
-
-This command increases CPU usage to trigger the alarm condition.
 
 ![Stress command execution](Screenshots/stress_command.png)
 
 ---
 
-# 10. Alarm Notification
+## Alarm Notification
 
-Once the CPU usage exceeded the threshold, the alarm was triggered and a notification email was sent.
-
-The email confirms the alarm state changed to **FIRING**.
+The alarm was triggered successfully and an email notification was received.
 
 ![Alarm email notification](Screenshots/alarm_email.png)
 
+This confirms that monitoring and notifications are functioning correctly.
+
 ---
+
+# Conclusion
+
+The results show how OCI provides a secure and scalable cloud environment with integrated logging, monitoring, and access control.
 
 # Conclusion
 
 This lab demonstrated the deployment and management of cloud resources in Oracle Cloud Infrastructure.  
 Key components such as compute instances, block storage, object storage, vault secrets, logging, and monitoring alarms were successfully configured and tested.
 
+The following key tasks were completed:
+
+- Infrastructure provisioning using Terraform (2.2.1)
+- Block storage configuration (2.3)
+- Object storage with IAM-based access (2.4.1)
+- Network logging using VCN Flow Logs (2.7.1)
+- Monitoring and alerting (2.8.1)
+
 The lab highlights how OCI provides secure, scalable, and manageable infrastructure for cloud-based applications.
+```
