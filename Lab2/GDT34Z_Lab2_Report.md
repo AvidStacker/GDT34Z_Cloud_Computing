@@ -12,15 +12,29 @@ The tasks include Infrastructure as Code (Terraform), block storage configuratio
 
 ---
 
-# 2.2.1 Infrastructure as Code (Terraform)
+## 2.2.1 Infrastructure as Code (Terraform)
 
-A compute instance was automatically provisioned using Terraform.  
-This fulfills the requirement of deploying infrastructure using Infrastructure as Code.
+A Terraform-based environment was configured to enable automated provisioning of cloud infrastructure in Oracle Cloud Infrastructure (OCI). This setup included installation of necessary tools, configuration of authentication via the OCI CLI, and defining infrastructure using Infrastructure as Code (IaC).
 
-![Compute instance](Screenshots/oci_instance_overview.png)
+Terraform was used to declaratively define and deploy resources in OCI. Authentication was handled through the OCI CLI configuration, which allowed secure access without hardcoding sensitive credentials in the Terraform configuration files.
 
-The instance was successfully created and is running in OCI.  
-This demonstrates automated provisioning instead of manual configuration.
+To ensure flexibility and reusability, variables were used for key parameters such as compartment ID, availability domain, network ranges, instance shape, and SSH key. This makes it possible to reuse the same configuration across different environments by modifying variable values instead of changing the core code.
+
+The infrastructure definition included both networking components and a compute instance. A Virtual Cloud Network (VCN), subnet, Internet Gateway, and route table were provisioned to enable external connectivity. Security rules allowed SSH access, and the compute instance was assigned a public IP address.
+
+The compute instance was configured with an SSH public key for secure access and deployed using an Ubuntu 22.04 image. It was successfully created in the **eu-stockholm-1** region using the **VM.Standard.E2.1.Micro** shape.
+
+Terraform was initialized, validated, and deployed using the following standard workflow:
+
+- `terraform init`
+- `terraform plan`
+- `terraform apply`
+
+This process ensured that all resources were created automatically and consistently, demonstrating the benefits of Infrastructure as Code such as reproducibility, version control, and reduced manual configuration.
+
+![OCI Compute Instance](./images/oci-instance.png)
+
+As shown in the figure, the instance is in a running state and has been assigned a public IP address, making it accessible via SSH. This confirms that the Terraform deployment was successful and that the infrastructure was provisioned entirely through code.
 
 ---
 
@@ -162,10 +176,6 @@ The alarm was triggered successfully and an email notification was received.
 This confirms that monitoring and notifications are functioning correctly.
 
 ---
-
-# Conclusion
-
-The results show how OCI provides a secure and scalable cloud environment with integrated logging, monitoring, and access control.
 
 # Conclusion
 
