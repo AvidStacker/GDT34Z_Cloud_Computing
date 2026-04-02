@@ -7,7 +7,7 @@ Get-Content $sigFile | ForEach-Object {
     if ($parts.Length -ge 2) {
         $type = $parts[0].ToUpper()
         $header = $parts[1]
-        $footer = $parts[2]
+        $footer = if ($parts.Length -ge 3) { $parts[2] } else { "" }
 
         $siglist[$type] = @{
             Header = $header
