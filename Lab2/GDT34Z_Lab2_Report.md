@@ -181,4 +181,3 @@ The following key tasks were completed:
 - Monitoring and alerting (2.8.1)
 
 The lab highlights how OCI provides secure, scalable, and manageable infrastructure for cloud-based applications.
-```
