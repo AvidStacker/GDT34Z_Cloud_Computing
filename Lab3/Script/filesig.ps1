@@ -16,6 +16,17 @@ Get-Content $sigFile | ForEach-Object {
     }
 }
 
+# --- FIX: Extension mapping ---
+$extensionMap = @{
+    "JPG"  = "JPEG"
+    "JPEG" = "JPEG"
+    "EXE"  = "PE"
+    "DLL"  = "PE"
+    "PDF"  = "PDF"
+    "ZIP"  = "ZIP"
+    "DB3"  = "DB3"
+}
+
 # Target directory
 $targetPath = "C:\tmp\ps"
 
@@ -26,17 +37,17 @@ $files = Get-ChildItem $targetPath -Recurse -File
 foreach ($file in $files) {
 
     try {
-        # Open file stream
         $stream = [System.IO.File]::OpenRead($file.FullName)
 
-        # Read first bytes (header)
-        $headerBytes = New-Object byte[] 8
-        $stream.Read($headerBytes, 0, 8) | Out-Null
+        # --- FIX: hantera små filer ---
+        $length = $stream.Length
 
-        # Read last bytes (footer)
-        $footerBytes = New-Object byte[] 8
-        $stream.Seek(-8, 'End') | Out-Null
-        $stream.Read($footerBytes, 0, 8) | Out-Null
+        $headerBytes = New-Object byte[] ([Math]::Min(8, $length))
+        $stream.Read($headerBytes, 0, $headerBytes.Length) | Out-Null
+
+        $footerBytes = New-Object byte[] ([Math]::Min(8, $length))
+        $stream.Seek(-$footerBytes.Length, 'End') | Out-Null
+        $stream.Read($footerBytes, 0, $footerBytes.Length) | Out-Null
 
         $stream.Close()
 
@@ -66,7 +77,15 @@ foreach ($file in $files) {
         $hash = Get-FileHash $file.FullName -Algorithm SHA256
 
         if ($match) {
-            if ($match -eq $extension) {
+
+            # --- FIX: använd mapping ---
+            if ($extensionMap.ContainsKey($extension)) {
+                $expectedType = $extensionMap[$extension]
+            } else {
+                $expectedType = $extension
+            }
+
+            if ($match -eq $expectedType) {
                 Write-Output "File: $($file.FullName) is a VALID $match file! SHA256Hash: $($hash.Hash)"
             }
             else {
