@@ -32,7 +32,7 @@ Terraform was initialized, validated, and deployed using the following standard 
 
 This process ensured that all resources were created automatically and consistently, demonstrating the benefits of Infrastructure as Code such as reproducibility, version control, and reduced manual configuration.
 
-![OCI Compute Instance](./images/oci-instance.png)
+![Compute instance](Screenshots/oci_instance_overview.png)
 
 As shown in the figure, the instance is in a running state and has been assigned a public IP address, making it accessible via SSH. This confirms that the Terraform deployment was successful and that the infrastructure was provisioned entirely through code.
 
