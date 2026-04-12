@@ -176,7 +176,7 @@ As an additional task, OCI Vault was used to securely store and manage sensitive
 
 A Vault named `lab2-vault` was created, and a master encryption key (`lab2-key`) was generated and enabled. This key is used to encrypt and protect stored secrets within the Vault.
 
-![Vault and key](Screenshots/vault_key.png)
+![Vault](Screenshots/vault.png)
 
 To validate the functionality, a secret was stored in the Vault and retrieved programmatically using a Python script with the OCI SDK.
 
@@ -190,6 +190,8 @@ python3 oci_vault_test1.py
 The script successfully retrieved the stored secret:
 
 This is probably super secret!
+
+![Output](Screenshots/vault_secret_retrieval.png.png)
 
 This confirms that secrets can be securely stored and accessed without exposing sensitive information directly in application code.
 
