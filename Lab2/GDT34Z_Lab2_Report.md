@@ -127,6 +127,8 @@ The volume was successfully mounted and persisted across reboots.
 
 An Object Storage bucket named `lab2-bucket` was created and used to upload files.
 
+![Bucket Instance](Screenshots/bucket_instance.png)
+
 ![Object storage bucket](Screenshots/object_storage_bucket.png)
 
 ---
