@@ -260,15 +260,16 @@ Monitoring and alerting were successfully configured and validated.
 ---
 
 # Conclusion
+This lab demonstrated the deployment and management of cloud resources in Oracle Cloud Infrastructure (OCI), with a focus on automation, security, and operational visibility.
 
-This lab demonstrated the deployment and management of cloud resources in Oracle Cloud Infrastructure.
+The required tasks (2.2.1, 2.3, 2.4.1, 2.5, 2.7.1, and 2.8.1) were successfully completed, covering key areas such as:
 
-The required tasks (2.2.1, 2.3, 2.4.1, 2.7.1, and 2.8.1) were successfully completed, covering:
+Infrastructure provisioning using Terraform (Infrastructure as Code)
+Persistent block storage configuration
+Object storage with IAM-based access control
+Network traffic logging using VCN Flow Logs
+Monitoring, alarms, and automated notifications
 
-* Infrastructure provisioning using Terraform
-* Block storage configuration
-* Object storage with IAM-based access
-* Network logging using VCN Flow Logs
-* Monitoring and alerting
+Together, these tasks illustrate how different OCI services integrate to form a complete cloud environment. The use of Infrastructure as Code improves consistency and repeatability, while IAM policies and logging enhance security and traceability.
 
-The results show that OCI provides a secure and scalable platform for managing cloud infrastructure using both automation and built-in cloud services.
+Overall, the results demonstrate that OCI provides a secure, scalable, and flexible platform for managing cloud infrastructure, supporting both automated deployments and robust monitoring capabilities essential for modern cloud operations.
