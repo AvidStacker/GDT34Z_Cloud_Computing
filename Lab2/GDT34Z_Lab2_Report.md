@@ -191,7 +191,7 @@ The script successfully retrieved the stored secret:
 
 This is probably super secret!
 
-![Output](Screenshots/vault_secret_retrieval.png.png)
+![Secret Key Retrieval](Screenshots/vault_secret_retrieval.png.png)
 
 This confirms that secrets can be securely stored and accessed without exposing sensitive information directly in application code.
 
