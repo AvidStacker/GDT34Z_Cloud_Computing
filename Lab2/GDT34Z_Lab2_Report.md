@@ -170,6 +170,32 @@ Both public and private access methods were successfully verified.
 
 ---
 
+## 2.5 Vault and Secret Management (Optional)
+
+As an additional task, OCI Vault was used to securely store and manage sensitive data such as secrets and encryption keys.
+
+A Vault named `lab2-vault` was created, and a master encryption key (`lab2-key`) was generated and enabled. This key is used to encrypt and protect stored secrets within the Vault.
+
+![Vault and key](Screenshots/vault_key.png)
+
+To validate the functionality, a secret was stored in the Vault and retrieved programmatically using a Python script with the OCI SDK.
+
+The OCI Python SDK was installed and used to access the Vault:
+
+```bash
+pip3 install oci
+python3 oci_vault_test1.py
+```
+
+The script successfully retrieved the stored secret:
+
+This is probably super secret!
+
+This confirms that secrets can be securely stored and accessed without exposing sensitive information directly in application code.
+
+The OCI Vault provides centralized and secure management of secrets and encryption keys. By retrieving secrets programmatically instead of hardcoding them, the risk of credential leakage is significantly reduced. This is an important security practice in modern cloud environments.
+
+
 ## 2.7.1 Cloud Logging (VCN Flow Logs)
 
 VCN Flow Logs were enabled to capture network traffic within the subnet.
