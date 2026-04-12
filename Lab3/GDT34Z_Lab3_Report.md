@@ -6,12 +6,12 @@ The purpose of this lab is to develop a PowerShell script that analyzes files ba
 
 This technique is commonly used in **system administration and digital forensics** to detect tampered or suspicious files.
 
-The script should:
+The script performs the following:
 
 * Read file signatures from a configuration file
 * Recursively scan a directory
-* Identify file types based on content
-* Compare detected type with file extension
+* Identify file types based on binary content
+* Map file extensions to expected file types
 * Classify files as **VALID**, **ROGUE**, or **UNKNOWN**
 
 ---
@@ -42,112 +42,20 @@ Each row follows the format:
 FileType;Header;Footer
 ```
 
-![Signature file](Screenshots/siglist_content.png)
-
 ---
 
 ## Methodology
 
 The script performs the following steps:
 
-1. Load file signatures into memory
-2. Retrieve all files recursively from the target directory
-3. Read only the necessary parts of each file (header and footer) using file streams
-4. Convert the extracted bytes into hexadecimal format
-5. Compare file headers and footers with known signatures
-6. Extract file extension
-7. Compute SHA256 hash
-8. Output classification results
-
----
-
-## Full PowerShell Script
-
-```powershell
-# Load signatures
-$siglist = @{}
-$sigFile = "$PSScriptRoot\siglist.txt"
-
-Get-Content $sigFile | ForEach-Object {
-    $parts = $_ -split ";"
-    if ($parts.Length -ge 2) {
-        $type = $parts[0].ToUpper()
-        $header = $parts[1]
-        $footer = $parts[2]
-
-        $siglist[$type] = @{
-            Header = $header
-            Footer = $footer
-        }
-    }
-}
-
-# Target directory
-$targetPath = "C:\tmp\ps"
-
-Write-Output "Searching recursively for file signatures in: $targetPath"
-
-$files = Get-ChildItem $targetPath -Recurse -File
-
-foreach ($file in $files) {
-
-    try {
-        # Open file stream
-        $stream = [System.IO.File]::OpenRead($file.FullName)
-
-        # Read first bytes (header)
-        $headerBytes = New-Object byte[] 8
-        $stream.Read($headerBytes, 0, 8) | Out-Null
-
-        # Read last bytes (footer)
-        $footerBytes = New-Object byte[] 8
-        $stream.Seek(-8, 'End') | Out-Null
-        $stream.Read($footerBytes, 0, 8) | Out-Null
-
-        $stream.Close()
-
-        # Convert to hex
-        $headerHex = ($headerBytes | ForEach-Object { $_.ToString("X2") }) -join ""
-        $footerHex = ($footerBytes | ForEach-Object { $_.ToString("X2") }) -join ""
-
-        $match = $null
-
-        foreach ($type in $siglist.Keys) {
-            $header = $siglist[$type].Header
-            $footer = $siglist[$type].Footer
-
-            if ($headerHex.StartsWith($header)) {
-                if ($footer -and $footerHex.EndsWith($footer)) {
-                    $match = $type
-                    break
-                }
-                elseif (-not $footer) {
-                    $match = $type
-                    break
-                }
-            }
-        }
-
-        $extension = $file.Extension.TrimStart(".").ToUpper()
-        $hash = Get-FileHash $file.FullName -Algorithm SHA256
-
-        if ($match) {
-            if ($match -eq $extension) {
-                Write-Output "File: $($file.FullName) is a VALID $match file! SHA256Hash: $($hash.Hash)"
-            }
-            else {
-                Write-Output "File: $($file.FullName) is a ROGUE $match file! SHA256Hash: $($hash.Hash)"
-            }
-        }
-        else {
-            Write-Output "File: $($file.FullName) is NOT PRESENT IN FILE SIGNATURE LIST! SHA256Hash: $($hash.Hash)"
-        }
-    }
-    catch {
-        Write-Output "Error reading file: $($file.FullName)"
-    }
-}
-```
+1. Load file signatures and convert them into byte arrays
+2. Dynamically determine header and footer lengths
+3. Recursively scan the target directory
+4. Read only the beginning and end of each file
+5. Compare file signatures using byte-level matching
+6. Map file extensions to expected types
+7. Compute SHA256 hashes
+8. Classify files based on results
 
 ---
 
@@ -165,13 +73,27 @@ Execute the script in PowerShell:
 
 Below is the output from running the script:
 
-![filesig.ps1 output](Screenshots/filesig_output.png)
+```
+[OK] cons.exe → VALID PE
+[BAD] cons.txt → ROGUE PE
+[BAD] demo.bmp → ROGUE JPEG
+[OK] demo.jpg → VALID JPEG
+[BAD] ioping...docx → ROGUE ZIP
+[OK] ioping...zip → VALID ZIP
+[OK] Programming_stick_guide.pdf → VALID PDF
+[OK] sms.db3 → VALID DB3
+[BAD] mex.dll → ROGUE JPEG
+[WARN] several files → NOT PRESENT IN FILE SIGNATURE LIST
+```
 
-The output shows three types of classifications:
+Summary:
 
-* **VALID** – The file signature matches the file extension
-* **ROGUE** – The file signature does not match the file extension (indicating possible file manipulation)
-* **NOT PRESENT** – The file type is not included in the signature list
+```
+Total files scanned : 16
+Valid files         : 6
+Rogue files         : 4
+Unknown files       : 6
+```
 
 ---
 
@@ -179,28 +101,31 @@ The output shows three types of classifications:
 
 The results clearly demonstrate how file signatures can reveal the true nature of files regardless of their extensions.
 
-Several important observations can be made:
+Key observations:
 
-* Files such as `.zip`, `.pdf`, and `.db3` were correctly identified as **VALID**, meaning their internal structure matches their file extension
-* Multiple files were identified as **ROGUE**, such as `.txt`, `.bmp`, and `.docx` files that actually contained executable, JPEG, or ZIP data
-* This indicates **file mangling**, where files have been renamed to disguise their true type
-* Some files were classified as **NOT PRESENT**, meaning their signatures were not defined in the `siglist.txt` file
+* Several files such as `.exe`, `.jpg`, `.zip`, `.pdf`, and `.db3` were correctly identified as **VALID**
+* Multiple files were identified as **ROGUE**, including:
 
-A particularly important case is when a file appears visually correct (e.g., `.jpg`) but is still classified as **ROGUE**, which may indicate:
+  * `.txt` file containing executable data
+  * `.bmp` file containing JPEG data
+  * `.docx` file identified as ZIP (expected behavior since DOCX is ZIP-based)
+  * `.dll` file containing JPEG data
+* This indicates **file mangling**, where files are renamed to disguise their true content
+* A number of files were classified as **UNKNOWN**, including:
 
-* Corrupted files
-* Incomplete file data
-* Incorrect or missing footer signatures
+  * Script files (`.ps1`)
+  * Text files (`.txt`)
+  * Other unsupported formats
 
-This demonstrates that relying solely on file extensions is unreliable and potentially dangerous in security-sensitive environments.
+These results confirm that relying solely on file extensions is unreliable in security-sensitive environments.
 
 ---
 
 ## Limitations
 
-* Reads only a small portion of each file (header and footer), which improves performance but may not detect more complex file structures
-* Depends on accuracy of `siglist.txt`
-* Limited to header/footer matching
+* Only analyzes file headers and footers
+* Dependent on accuracy of `siglist.txt`
+* Does not inspect full file structure
 
 ---
 
@@ -208,23 +133,17 @@ This demonstrates that relying solely on file extensions is unreliable and poten
 
 Possible improvements include:
 
-* Supporting more advanced file signature analysis beyond simple header/footer matching
-* Adding support for more file types
-* Exporting results to a log file
-* Adding colored output for readability
-* Implementing parallel processing
+* Supporting more file types
+* Exporting results to a file
+* Parallel processing
 
 ---
 
 ## Conclusion
 
-This lab provided practical experience with:
+The script successfully identifies mismatches between file content and file extensions using file signature analysis.
 
-* PowerShell scripting
-* Binary data processing
-* File signature analysis
-
-The script successfully identifies mismatches between file content and file extension and demonstrates how file signatures can be used to detect manipulated or suspicious files.
+It demonstrates how file signatures can be used to detect manipulated or suspicious files in a system.
 
 ---
 
@@ -232,7 +151,7 @@ The script successfully identifies mismatches between file content and file exte
 
 ### a) Relevance
 
-The lab is relevant as it provides hands-on experience with analyzing file signatures and detecting file type mismatches. It specifically highlights how easily file extensions can be manipulated and why relying on file content is more reliable when identifying potentially malicious or disguised files.
+The lab is relevant as it provides practical experience with file signature analysis and highlights the risks of relying on file extensions.
 
 ### b) Suggested Improvements
 
