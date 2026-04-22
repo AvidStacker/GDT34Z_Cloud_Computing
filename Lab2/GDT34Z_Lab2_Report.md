@@ -119,6 +119,32 @@ cat /etc/fstab
 
 The volume was successfully mounted and persisted across reboots.
 
+
+### Block Storage Backup
+
+To ensure data protection, a manual backup of the block volume was created using the OCI console.
+
+The backup was initiated from the block volume resource and completed successfully.
+
+Verification:
+
+The backup status is shown as **Available**, confirming that the volume data has been successfully stored and can be restored if needed.
+
+![Block volume backup](Screenshots/block_volume_backup_created.png)
+
+
+### Scheduled Backup Policy
+
+Scheduled backup policies were investigated in OCI.
+
+However, no backup policy could be assigned in the current environment, as shown in the figure below, where the backup policy is listed as "None".
+
+This limitation is likely related to tenancy restrictions in the Free Tier account being used.
+
+Therefore, manual backups were used to fulfill the backup requirement.
+
+![Scheduled backup policy not available](Screenshots/backup_policy_none.png)
+
 ---
 
 ## 2.4.1 Object Storage and Manual Access
